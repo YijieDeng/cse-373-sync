@@ -1,4 +1,3 @@
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class BTree<T extends Comparable<T>> {
     public DNode root;
@@ -8,27 +7,21 @@ public class BTree<T extends Comparable<T>> {
     }
 
     private class DNode {
-        private DNode parent;
+
         private boolean isRed;
         private DNode left;
         private DNode right;
         private T data;
 
         DNode(T value) {
-            this.parent = null;
             markRed();
             this.left = null;
             this.right = null;
             this.data = value;
         }
 
-        DNode(DNode parent, T value) {
+        DNode(DNode left,DNode right, T value) {
             this(value);
-            this.parent = parent;
-        }
-
-        DNode(DNode parent,DNode left,DNode right, T value) {
-            this(parent, value);
             this.left = left;
             this.right = right;
         }
@@ -62,30 +55,29 @@ public class BTree<T extends Comparable<T>> {
         int comp = value.compareTo(root.data);
         if (comp < 0) {
             root.left = add(root.left, value);
-            root.left.parent = root;
         } else if (comp > 0) {
             root.right = add(root.right, value);
-            root.right.parent = root;
         } else {
             // do nothing yet!
         }
 
-        if(root.right.isRed() && !root.left.isRed()) {
-            root = rotateLeftPivot(root.right);
-        }
-        if(root.left.isRed()&&
-                root.left.left!=null&&
-                root.left.left.isRed()) {
-            root = rotateRightPivot(root.left);
-            flip(root);
+        if(!isRed(root.left) && isRed(root.right)) {
             root = rotateLeftPivot(root);
         }
-        if(root.right.isRed() && root.left.isRed()) {
+        if(isRed(root.left) && isRed(root.left.left)) {
+            root = rotateRightPivot(root);
+        }
+        if(isRed(root.left) && isRed(root.right)) {
             flip(root);
         }
-
-
         return root;
+    }
+
+    public boolean isRed(DNode node) {
+        if (node == null) {
+            return false;
+        }
+        return node.isRed();
     }
 
     public void flip(DNode root) {
@@ -98,12 +90,18 @@ public class BTree<T extends Comparable<T>> {
         }
     }
 
-    public DNode rotateLeftPivot(DNode pivot){
-        throw new NotImplementedException();
+    public DNode rotateLeftPivot(DNode root){
+        DNode pivot = root.right;
+        root.right = pivot.left;
+        pivot.left = root;
+        return pivot;
     }
 
-    public DNode rotateRightPivot(DNode pivot){
-        throw new NotImplementedException();
+    public DNode rotateRightPivot(DNode root){
+        DNode pivot = root.left;
+        root.left = pivot.right;
+        pivot.right = root;
+        return pivot;
     }
 
 

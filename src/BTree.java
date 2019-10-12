@@ -3,7 +3,7 @@ public class BTree<T extends Comparable<T>> {
     public DNode root;
 
     public BTree(){
-        root = new DNode(null);
+        this.root = null;
     }
 
     private class DNode {
@@ -92,13 +92,20 @@ public class BTree<T extends Comparable<T>> {
 
     public DNode rotateLeftPivot(DNode root){
         DNode pivot = root.right;
+        swapRedBlack(root, pivot);
         root.right = pivot.left;
         pivot.left = root;
         return pivot;
     }
+    public void swapRedBlack(DNode root, DNode pivot){
+        boolean temp = isRed(root);
+        root.isRed = isRed(pivot);
+        pivot.isRed = temp;
+    }
 
     public DNode rotateRightPivot(DNode root){
         DNode pivot = root.left;
+        swapRedBlack(root, pivot);
         root.left = pivot.right;
         pivot.right = root;
         return pivot;
